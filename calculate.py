@@ -31,6 +31,12 @@ class Factory:
 
 
 products: Dict[str, Product] = {
+    'advanced circuit': Product(
+        time=6,
+        inputs={'copper wire': 4, 'electronic circuit': 2, 'plastic bar': 2},
+        input_expensive={'copper wire': 8, 'electronic circuit': 2, 'plastic bar': 4},
+        factory_type='assembling machine',
+        is_intermediate=True),
     'coal': Product(
         time=1,
         inputs={},
@@ -59,6 +65,11 @@ products: Dict[str, Product] = {
         time=0.5,
         inputs={'iron plate': 1, 'copper wire': 3},
         input_expensive={'iron plate': 2, 'copper wire': 8},
+        factory_type='assembling machine',
+        is_intermediate=True),
+    'engine unit': Product(
+        time=10,
+        inputs={'iron gear wheel': 1, 'pipe': 2, 'steel plate': 1},
         factory_type='assembling machine',
         is_intermediate=True),
     'firearm magazine': Product(
@@ -99,6 +110,18 @@ products: Dict[str, Product] = {
         inputs={'copper plate': 5, 'firearm magazine': 1, 'steel plate': 1},
         factory_type='assembling machine',
         is_intermediate=False),
+    'pipe': Product(
+        time=0.5,
+        inputs={'iron plate': 1},
+        input_expensive={'iron plate': 2},
+        factory_type='assembling machine',
+        is_intermediate=False),
+    'plastic bar': Product(
+        time=1,
+        inputs={'coal': 1, 'petroleum gas': 20},
+        factory_type='chemical plant',
+        is_intermediate=True,
+        category='plate'),
     'science pack 1 red': Product(
         time=5,
         inputs={'copper plate': 1, 'iron gear wheel': 1},
@@ -115,6 +138,13 @@ products: Dict[str, Product] = {
         time=10,
         product=2,
         inputs={'grenade': 1, 'piercing rounds magazine': 1, 'wall': 2},
+        factory_type='assembling machine',
+        is_intermediate=True,
+        category='science'),
+    'science pack 4 blue': Product(
+        time=24,
+        product=2,
+        inputs={'advanced circuit': 3, 'engine unit': 2, 'sulfur': 1},
         factory_type='assembling machine',
         is_intermediate=True,
         category='science'),
@@ -138,6 +168,12 @@ products: Dict[str, Product] = {
         factory_type='furnace',
         is_intermediate=True,
         category='plate'),
+    'sulfur': Product(
+        time=1,
+        product=2,
+        inputs={'petroleum gas': 30, 'water': 30},
+        factory_type='chemical plant',
+        is_intermediate=True),
     'transport belt': Product(
         time=0.5,
         product=2,
@@ -149,6 +185,32 @@ products: Dict[str, Product] = {
         inputs={'stone brick': 5},
         factory_type='assembling machine',
         is_intermediate=False),
+
+    # TODO: implement oil processing
+    'heavy oil': Product(
+        time=1,
+        inputs={},
+        factory_type='raw',
+        is_intermediate=True,
+        category='fluid'),
+    'light oil': Product(
+        time=1,
+        inputs={},
+        factory_type='raw',
+        is_intermediate=True,
+        category='fluid'),
+    'petroleum gas': Product(
+        time=1,
+        inputs={},
+        factory_type='raw',
+        is_intermediate=True,
+        category='fluid'),
+    'water': Product(
+        time=1,
+        inputs={},
+        factory_type='raw',
+        is_intermediate=True,
+        category='fluid'),
 }
 
 
@@ -161,6 +223,10 @@ factories: Dict[Tuple[str, bool], Factory] = {
     ('furnace', True): Factory(2.7, 1.1),
     # electric mining drill + no modules
     ('mining drill', True): Factory(0.5, 1.0),
+    # 2 prod. module + 1 speed module
+    ('chemical plant', True): Factory(1.2, 1.2),
+    # TODO: implement oil processing
+    ('raw', True): Factory(1.0, 1.0),
 }
 
 
@@ -242,4 +308,5 @@ g = Graph(True)
 g.add('science pack 1', science_pack_rate)
 g.add('science pack 2', science_pack_rate)
 g.add('science pack 3', science_pack_rate)
+g.add('science pack 4', science_pack_rate)
 g.render()
