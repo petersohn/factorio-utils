@@ -31,11 +31,24 @@ class Factory:
 
 
 products: Dict[str, Product] = {
+    'accumulator': Product(
+        time=10,
+        product=1,
+        inputs={'battery': 5, 'iron plate': 2},
+        factory_type='assembling machine',
+        is_intermediate=False),
     'advanced circuit': Product(
         time=6,
         inputs={'copper wire': 4, 'electronic circuit': 2, 'plastic bar': 2},
         input_expensive={'copper wire': 8, 'electronic circuit': 2, 'plastic bar': 4},
         factory_type='assembling machine',
+        is_intermediate=True),
+    'battery': Product(
+        time=4,
+        time_expensive=5,
+        inputs={'copper plate': 1, 'iron plate': 1, 'sulfuric acid': 20},
+        input_expensive={'copper plate': 1, 'iron plate': 1, 'sulfuric acid': 40},
+        factory_type='chemical plant',
         is_intermediate=True),
     'coal': Product(
         time=1,
@@ -61,6 +74,11 @@ products: Dict[str, Product] = {
         inputs={'copper plate': 1},
         factory_type='assembling machine',
         is_intermediate=True),
+    'electric engine unit': Product(
+        time=10,
+        inputs={'electronic circuit': 2, 'engine unit': 1, 'lubricant': 15},
+        factory_type='assembling machine',
+        is_intermediate=True),
     'electric furnace': Product(
         time=5,
         inputs={'advanced circuit': 5, 'steel plate': 10, 'stone brick': 10},
@@ -82,6 +100,16 @@ products: Dict[str, Product] = {
         inputs={'iron plate': 4},
         factory_type='assembling machine',
         is_intermediate=False),
+    'flying robot frame': Product(
+        time=20,
+        inputs={
+            'battery': 2,
+            'electric engine unit': 1,
+            'electronic circuit': 3,
+            'steel plate': 1,
+        },
+        factory_type='assembling machine',
+        is_intermediate=True),
     'grenade': Product(
         time=8,
         inputs={'coal': 10, 'iron plate': 5},
@@ -116,6 +144,18 @@ products: Dict[str, Product] = {
         inputs={'iron plate': 1},
         factory_type='assembling machine',
         is_intermediate=True),
+    'low density structure': Product(
+        time=20,
+        inputs={'copper plate': 20, 'plastic bar': 5, 'steel plate': 2},
+        input_expensive={'copper plate': 20, 'plastic bar': 30, 'steel plate': 2},
+        factory_type='assembling machine',
+        is_intermediate=True),
+    'lubricant': Product(
+        time=1,
+        product=10,
+        inputs={'heavy oil': 10},
+        factory_type='chemical plant',
+        is_intermediate=True),
     'piercing rounds magazine': Product(
         time=3,
         inputs={'copper plate': 5, 'firearm magazine': 1, 'steel plate': 1},
@@ -133,9 +173,21 @@ products: Dict[str, Product] = {
         factory_type='chemical plant',
         is_intermediate=True,
         category='plate'),
+    'processing unit': Product(
+        time=10,
+        inputs={'advanced circuit': 2, 'electronic circuit': 20, 'sulfuric acid': 5},
+        input_expensive={'advanced circuit': 2, 'electronic circuit': 20, 'sulfuric acid': 10},
+        factory_type='assembling machine',
+        is_intermediate=True),
     'productivity module 1': Product(
         time=15,
         inputs={'advanced circuit': 5, 'electronic circuit': 5},
+        factory_type='assembling machine',
+        is_intermediate=False),
+    'radar': Product(
+        time=0.5,
+        product=1,
+        inputs={'electronic circuit': 5, 'iron gear wheel': 5, 'iron plate': 10},
         factory_type='assembling machine',
         is_intermediate=False),
     'rail': Product(
@@ -144,6 +196,37 @@ products: Dict[str, Product] = {
         inputs={'iron stick': 1, 'steel plate': 1, 'stone': 1},
         factory_type='assembling machine',
         is_intermediate=False),
+    'rocket control unit': Product(
+        time=30,
+        product=1,
+        inputs={'processing unit': 1, 'speed module 1': 1},
+        factory_type='assembling machine',
+        is_intermediate=True),
+    'rocket fuel': Product(
+        time=30,
+        product=1,
+        inputs={'light oil': 10, 'solid fuel': 10},
+        factory_type='assembling machine',
+        is_intermediate=True),
+    'rocket part': Product(
+        time=3,
+        product=1,
+        inputs={'low density structure': 10, 'rocket control unit': 10, 'rocket fuel': 10},
+        factory_type='rocket silo',
+        is_intermediate=True),
+    'satellite': Product(
+        time=5,
+        product=1,
+        inputs={
+            'accumulator': 100,
+            'low density structure': 100,
+            'processing unit': 100,
+            'radar': 5,
+            'rocket fuel': 50,
+            'solar panel': 100,
+        },
+        factory_type='assembling machine',
+        is_intermediate=True),
     'science pack 1 red': Product(
         time=5,
         inputs={'copper plate': 1, 'iron gear wheel': 1},
@@ -177,6 +260,39 @@ products: Dict[str, Product] = {
         factory_type='assembling machine',
         is_intermediate=True,
         category='science'),
+    'science pack 6 yellow': Product(
+        time=21,
+        product=3,
+        inputs={'flying robot frame': 1, 'low density structure': 3, 'processing unit': 2},
+        factory_type='assembling machine',
+        is_intermediate=True,
+        category='science'),
+    # This part represents the rocket launch
+    'science pack 7 white': Product(
+        time=40,  # approximate time of launch
+        product=1000,
+        inputs={'rocket part': 100, 'satellite': 1},
+        factory_type='raw',
+        is_intermediate=False,  # not intermediate, rocket parts are
+        category='science'),
+    'solar panel': Product(
+        time=10,
+        product=1,
+        inputs={'copper plate': 5, 'electronic circuit': 15, 'steel plate': 5},
+        factory_type='assembling machine',
+        is_intermediate=False),
+    # most efficient recipe
+    'solid fuel': Product(
+        time=2,
+        product=1,
+        inputs={'light oil': 10},
+        factory_type='chemical plant',
+        is_intermediate=True),
+    'speed module 1': Product(
+        time=15,
+        inputs={'advanced circuit': 5, 'electronic circuit': 5},
+        factory_type='assembling machine',
+        is_intermediate=False),
     'steel plate': Product(
         time=16,
         inputs={'iron plate': 5},
@@ -200,6 +316,12 @@ products: Dict[str, Product] = {
         time=1,
         product=2,
         inputs={'petroleum gas': 30, 'water': 30},
+        factory_type='chemical plant',
+        is_intermediate=True),
+    'sulfuric acid': Product(
+        time=1,
+        product=50,
+        inputs={'iron plate': 1, 'sulfur': 5, 'water': 100},
         factory_type='chemical plant',
         is_intermediate=True),
     'transport belt': Product(
@@ -255,6 +377,9 @@ factories: Dict[Tuple[str, bool], Factory] = {
     ('chemical plant', True): Factory(1.2, 1.2),
     # TODO: implement oil processing
     ('raw', True): Factory(1.0, 1.0),
+    ('raw', False): Factory(1.0, 1.0),
+    # 4 prod. science packs
+    ('rocket silo', True): Factory(0.4, 1.4),
 }
 
 
@@ -338,4 +463,6 @@ g.add('science pack 2', science_pack_rate)
 g.add('science pack 3', science_pack_rate)
 g.add('science pack 4', science_pack_rate)
 g.add('science pack 5', science_pack_rate)
+g.add('science pack 6', science_pack_rate)
+g.add('science pack 7', science_pack_rate)
 g.render()
