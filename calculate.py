@@ -12,7 +12,8 @@ class Product:
             is_intermediate: bool,
             product: int=1,
             time_expensive: Optional[float]=None,
-            input_expensive: Optional[Dict[str, int]]=None) -> None:
+            input_expensive: Optional[Dict[str, int]]=None,
+            category: Optional[str]=None) -> None:
         self.time = time
         self.product = product
         self.inputs = inputs
@@ -20,6 +21,7 @@ class Product:
         self.input_expensive = input_expensive
         self.factory_type = factory_type
         self.is_intermediate = is_intermediate
+        self.category = category
 
 
 class Factory:
@@ -33,17 +35,20 @@ products: Dict[str, Product] = {
         time=1,
         inputs={},
         factory_type='mining drill',
-        is_intermediate=True),
+        is_intermediate=True,
+        category='raw'),
     'copper ore': Product(
         time=1,
         inputs={},
         factory_type='mining drill',
-        is_intermediate=True),
+        is_intermediate=True,
+        category='raw'),
     'copper plate': Product(
         time=3.2,
         inputs={'copper ore': 1},
         factory_type='furnace',
-        is_intermediate=True),
+        is_intermediate=True,
+        category='plate'),
     'copper wire': Product(
         time=0.5,
         product=2,
@@ -81,12 +86,14 @@ products: Dict[str, Product] = {
         time=1,
         inputs={},
         factory_type='mining drill',
-        is_intermediate=True),
+        is_intermediate=True,
+        category='raw'),
     'iron plate': Product(
         time=3.2,
         inputs={'iron ore': 1},
         factory_type='furnace',
-        is_intermediate=True),
+        is_intermediate=True,
+        category='plate'),
     'piercing rounds magazine': Product(
         time=3,
         inputs={'copper plate': 5, 'firearm magazine': 1, 'steel plate': 1},
@@ -96,35 +103,41 @@ products: Dict[str, Product] = {
         time=5,
         inputs={'copper plate': 1, 'iron gear wheel': 1},
         factory_type='assembling machine',
-        is_intermediate=True),
+        is_intermediate=True,
+        category='science'),
     'science pack 2 green': Product(
         time=6,
         inputs={'inserter': 1, 'transport belt': 1},
         factory_type='assembling machine',
-        is_intermediate=True),
+        is_intermediate=True,
+        category='science'),
     'science pack 3 black': Product(
         time=10,
         product=2,
         inputs={'grenade': 1, 'piercing rounds magazine': 1, 'wall': 2},
         factory_type='assembling machine',
-        is_intermediate=True),
+        is_intermediate=True,
+        category='science'),
     'steel plate': Product(
         time=16,
         inputs={'iron plate': 5},
         time_expensive=32,
         input_expensive={'iron plate': 10},
         factory_type='furnace',
-        is_intermediate=True),
+        is_intermediate=True,
+        category='plate'),
     'stone': Product(
         time=1,
         inputs={},
         factory_type='mining drill',
-        is_intermediate=True),
+        is_intermediate=True,
+        category='raw'),
     'stone brick': Product(
         time=3.2,
         inputs={'stone': 2},
         factory_type='furnace',
-        is_intermediate=True),
+        is_intermediate=True,
+        category='plate'),
     'transport belt': Product(
         time=0.5,
         product=2,
@@ -186,31 +199,33 @@ class Graph:
 
     def render(self) -> None:
         main_graph = graphviz.Digraph(format='svg')
-        sources = graphviz.Digraph()
-        sources.body.append('rank=source\n')
-        sinks = graphviz.Digraph()
-        sinks.body.append('rank=sink\n')
-        targets = graphviz.Digraph()
-        targets.body.append('rank=same\n')
+        main_graph.body.append('rankdir=LR;\n')
+        subgraphs: Dict[str, graphviz.Digraph] = {}
 
         node_names: Dict[str, str] = {}
         for item, rate in self.nodes.items():
             name = 'n{}'.format(len(node_names))
             node_names[item] = name
+            product = products.get(item)
+            category = None
+            if product is not None:
+                category = product.category
 
-            g = main_graph
-            if item == 'end':
-                g = sinks
-            elif not products[item].inputs:
-                g = sources
-            elif item in self.targets:
-                g = targets
+            if category is not None:
+                if category not in subgraphs:
+                    g = graphviz.Digraph(category)
+                    g.body.append('rank=same;\n')
+                    subgraphs[category] = g
+                else:
+                    g = subgraphs[category]
+            else:
+                g = main_graph
+
 
             g.node(name, '{} [{:.1f}]'.format(item, rate))
 
-        main_graph.subgraph(sources)
-        main_graph.subgraph(targets)
-        main_graph.subgraph(sinks)
+        for subgraph in subgraphs.values():
+            main_graph.subgraph(subgraph)
 
         for (source, target), rate in self.edges.items():
             main_graph.edge(
