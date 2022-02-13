@@ -144,9 +144,8 @@ class Graph:
         self.edges.setdefault((source, target), 0.0)
         self.edges[(source, target)] += rate
 
-
         for input, amount in inputs.items():
-            self._add(input, source, rate * amount / factory.productivity)
+            self._add(input, source, rate * amount / factory.productivity / product.product)
 
     def add(self, item: str, rate: float) -> None:
         if item not in products:
