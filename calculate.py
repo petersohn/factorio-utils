@@ -61,6 +61,11 @@ products: Dict[str, Product] = {
         inputs={'copper plate': 1},
         factory_type='assembling machine',
         is_intermediate=True),
+    'electric furnace': Product(
+        time=5,
+        inputs={'advanced circuit': 5, 'steel plate': 10, 'stone brick': 10},
+        factory_type='assembling machine',
+        is_intermediate=False),
     'electronic circuit': Product(
         time=0.5,
         inputs={'iron plate': 1, 'copper wire': 3},
@@ -105,6 +110,12 @@ products: Dict[str, Product] = {
         factory_type='furnace',
         is_intermediate=True,
         category='plate'),
+    'iron stick': Product(
+        time=0.5,
+        product=2,
+        inputs={'iron plate': 1},
+        factory_type='assembling machine',
+        is_intermediate=True),
     'piercing rounds magazine': Product(
         time=3,
         inputs={'copper plate': 5, 'firearm magazine': 1, 'steel plate': 1},
@@ -122,6 +133,17 @@ products: Dict[str, Product] = {
         factory_type='chemical plant',
         is_intermediate=True,
         category='plate'),
+    'productivity module 1': Product(
+        time=15,
+        inputs={'advanced circuit': 5, 'electronic circuit': 5},
+        factory_type='assembling machine',
+        is_intermediate=False),
+    'rail': Product(
+        time=0.5,
+        product=2,
+        inputs={'iron stick': 1, 'steel plate': 1, 'stone': 1},
+        factory_type='assembling machine',
+        is_intermediate=False),
     'science pack 1 red': Product(
         time=5,
         inputs={'copper plate': 1, 'iron gear wheel': 1},
@@ -148,14 +170,20 @@ products: Dict[str, Product] = {
         factory_type='assembling machine',
         is_intermediate=True,
         category='science'),
+    'science pack 5 purple': Product(
+        time=21,
+        product=3,
+        inputs={'electric furnace': 1, 'productivity module 1': 1, 'rail': 30},
+        factory_type='assembling machine',
+        is_intermediate=True,
+        category='science'),
     'steel plate': Product(
         time=16,
         inputs={'iron plate': 5},
         time_expensive=32,
         input_expensive={'iron plate': 10},
         factory_type='furnace',
-        is_intermediate=True,
-        category='plate'),
+        is_intermediate=True),
     'stone': Product(
         time=1,
         inputs={},
@@ -309,4 +337,5 @@ g.add('science pack 1', science_pack_rate)
 g.add('science pack 2', science_pack_rate)
 g.add('science pack 3', science_pack_rate)
 g.add('science pack 4', science_pack_rate)
+g.add('science pack 5', science_pack_rate)
 g.render()
