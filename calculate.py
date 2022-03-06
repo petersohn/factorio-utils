@@ -314,8 +314,8 @@ factories: Dict[str, Factory] = {
     'assembling machine IM': Factory(1.3125, 1.3),
     # assembling machine 3 + no modules
     'assembling machine final': Factory(1.25, 1.0),
-    # electric furnace + 1 prod. module + 1 speed module
-    'furnace': Factory(2.7, 1.1),
+    # electric furnace + 1 prod. module + 1 efficiency module
+    'furnace': Factory(1.7, 1.1),
     # electric mining drill + no modules
     'mining drill': Factory(0.5, 1.0),
     # 2 prod. module + 1 speed module
@@ -409,4 +409,5 @@ g.add('science pack 4', science_pack_rate)
 g.add('science pack 5', science_pack_rate)
 g.add('science pack 6', science_pack_rate)
 g.add('science pack 7', science_pack_rate)
+# g.add('plastic bar', 45)
 g.render()
