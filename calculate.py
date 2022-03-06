@@ -365,10 +365,7 @@ class Graph:
         main_graph.body.append('rankdir=LR;\n')
         subgraphs: Dict[str, graphviz.Digraph] = {}
 
-        node_names: Dict[str, str] = {}
         for item, rate in self.nodes.items():
-            name = 'n{}'.format(len(node_names))
-            node_names[item] = name
             product = products.get(item)
             category = None
             if product is not None:
@@ -385,15 +382,14 @@ class Graph:
                 g = main_graph
 
 
-            g.node(name, '{} [{:.1f}]'.format(item, rate))
+            g.node(item, '{} [{:.1f}]'.format(item, rate))
 
         for subgraph in subgraphs.values():
             main_graph.subgraph(subgraph)
 
         for (source, target), rate in self.edges.items():
             main_graph.edge(
-                node_names[source], node_names[target],
-                label='{:.1f}'.format(rate))
+                source, target, label='{:.1f}'.format(rate))
 
         print(main_graph.source, file=sys.stderr)
         print(main_graph.pipe(encoding='utf-8'))
