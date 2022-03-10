@@ -8,6 +8,7 @@ class Product:
             self,
             time: float,
             inputs: Dict[str, int],
+            color: str,
             factory_type: str,
             product: int=1,
             time_expensive: Optional[float]=None,
@@ -18,6 +19,7 @@ class Product:
         self.inputs = inputs
         self.time_expensive = time_expensive
         self.input_expensive = input_expensive
+        self.color = color
         self.factory_type = factory_type
         self.category = category
 
@@ -33,58 +35,70 @@ products: Dict[str, Product] = {
         time=10,
         product=1,
         inputs={'battery': 5, 'iron plate': 2},
+        color='darkslategray2',
         factory_type='assembling machine final'),
     'advanced circuit': Product(
         time=6,
         inputs={'copper wire': 4, 'electronic circuit': 2, 'plastic bar': 2},
         input_expensive={'copper wire': 8, 'electronic circuit': 2, 'plastic bar': 4},
+        color='firebrick3',
         factory_type='assembling machine IM'),
     'battery': Product(
         time=4,
         time_expensive=5,
         inputs={'copper plate': 1, 'iron plate': 1, 'sulfuric acid': 20},
         input_expensive={'copper plate': 1, 'iron plate': 1, 'sulfuric acid': 40},
+        color='darkcyan',
         factory_type='chemical plant'),
     'coal': Product(
         time=1,
         inputs={},
         factory_type='mining drill',
+        color='black',
         category='raw'),
     'copper ore': Product(
         time=1,
         inputs={},
         factory_type='mining drill',
+        color='coral3',
         category='raw'),
     'copper plate': Product(
         time=3.2,
         inputs={'copper ore': 1},
         factory_type='furnace',
+        color='coral2',
         category='plate'),
     'copper wire': Product(
         time=0.5,
         product=2,
         inputs={'copper plate': 1},
+        color='coral',
         factory_type='assembling machine IM'),
     'electric engine unit': Product(
         time=10,
         inputs={'electronic circuit': 2, 'engine unit': 1, 'lubricant': 15},
+        color='darkmagenta',
         factory_type='assembling machine IM'),
     'electric furnace': Product(
         time=5,
         inputs={'advanced circuit': 5, 'steel plate': 10, 'stone brick': 10},
+        color='darkorange4',
         factory_type='assembling machine final'),
     'electronic circuit': Product(
         time=0.5,
         inputs={'iron plate': 1, 'copper wire': 3},
         input_expensive={'iron plate': 2, 'copper wire': 8},
+        color='forestgreen',
         factory_type='assembling machine IM'),
     'engine unit': Product(
         time=10,
         inputs={'iron gear wheel': 1, 'pipe': 2, 'steel plate': 1},
+        color='burlywood3',
         factory_type='assembling machine IM'),
     'firearm magazine': Product(
         time=1,
         inputs={'iron plate': 4},
+        color='goldenrod3',
         factory_type='assembling machine final'),
     'flying robot frame': Product(
         time=20,
@@ -94,92 +108,111 @@ products: Dict[str, Product] = {
             'electronic circuit': 3,
             'steel plate': 1,
         },
+        color='lightsteelblue4',
         factory_type='assembling machine IM'),
     'grenade': Product(
         time=8,
         inputs={'coal': 10, 'iron plate': 5},
+        color='grey20',
         factory_type='assembling machine final'),
     'inserter': Product(
         time=0.5,
         inputs={'electronic circuit': 1, 'iron gear wheel': 1, 'iron plate': 1},
+        color='gold2',
         factory_type='assembling machine final'),
     'iron gear wheel': Product(
         time=0.5,
         inputs={'iron plate': 2},
         input_expensive={'iron plate': 4},
+        color='gray65',
         factory_type='assembling machine IM'),
     'iron ore': Product(
         time=1,
         inputs={},
         factory_type='mining drill',
+        color='cadetblue4',
         category='raw'),
     'iron plate': Product(
         time=3.2,
         inputs={'iron ore': 1},
         factory_type='furnace',
+        color='slategray4',
         category='plate'),
     'iron stick': Product(
         time=0.5,
         product=2,
         inputs={'iron plate': 1},
+        color='gray40',
         factory_type='assembling machine IM'),
     'low density structure': Product(
         time=20,
         inputs={'copper plate': 20, 'plastic bar': 5, 'steel plate': 2},
         input_expensive={'copper plate': 20, 'plastic bar': 30, 'steel plate': 2},
+        color='bisque4',
         factory_type='assembling machine IM'),
     'lubricant': Product(
         time=1,
         product=10,
         inputs={'heavy oil': 10},
+        color='darkgreen',
         factory_type='chemical plant'),
     'piercing rounds magazine': Product(
         time=3,
         inputs={'copper plate': 5, 'firearm magazine': 1, 'steel plate': 1},
+        color='crimson',
         factory_type='assembling machine final'),
     'pipe': Product(
         time=0.5,
         inputs={'iron plate': 1},
         input_expensive={'iron plate': 2},
+        color='navajowhite4',
         factory_type='assembling machine final'),
     'plastic bar': Product(
         time=1,
         inputs={'coal': 1, 'petroleum gas': 20},
         factory_type='chemical plant',
+        color='gray80',
         category='plate'),
     'processing unit': Product(
         time=10,
         inputs={'advanced circuit': 2, 'electronic circuit': 20, 'sulfuric acid': 5},
         input_expensive={'advanced circuit': 2, 'electronic circuit': 20, 'sulfuric acid': 10},
+        color='blue3',
         factory_type='assembling machine IM'),
     'productivity module 1': Product(
         time=15,
         inputs={'advanced circuit': 5, 'electronic circuit': 5},
+        color='brown',
         factory_type='assembling machine final'),
     'radar': Product(
         time=0.5,
         product=1,
         inputs={'electronic circuit': 5, 'iron gear wheel': 5, 'iron plate': 10},
+        color='burlywood3',
         factory_type='assembling machine final'),
     'rail': Product(
         time=0.5,
         product=2,
         inputs={'iron stick': 1, 'steel plate': 1, 'stone': 1},
+        color='burlywood2',
         factory_type='assembling machine final'),
     'rocket control unit': Product(
         time=30,
         product=1,
         inputs={'processing unit': 1, 'speed module 1': 1},
+        color='darkolivegreen4',
         factory_type='assembling machine IM'),
     'rocket fuel': Product(
         time=30,
         product=1,
         inputs={'light oil': 10, 'solid fuel': 10},
+        color='darkgoldenrod2',
         factory_type='assembling machine IM'),
     'rocket part': Product(
         time=3,
         product=1,
         inputs={'low density structure': 10, 'rocket control unit': 10, 'rocket fuel': 10},
+        color='darkorange4',
         factory_type='rocket silo'),
     'satellite': Product(
         time=5,
@@ -192,40 +225,60 @@ products: Dict[str, Product] = {
             'rocket fuel': 50,
             'solar panel': 100,
         },
+        color='deepskyblue4',
         factory_type='assembling machine IM'),
+    'science': Product(
+        time=60,
+        inputs={
+            'science pack 1 red': 1,
+            'science pack 2 green': 1,
+            'science pack 3 black': 1,
+            'science pack 4 blue': 1,
+            'science pack 5 purple': 1,
+            'science pack 6 yellow': 1,
+            'science pack 7 white': 1,
+        },
+        factory_type='lab',
+        color='skyblue3'),
     'science pack 1 red': Product(
         time=5,
         inputs={'copper plate': 1, 'iron gear wheel': 1},
         factory_type='assembling machine IM',
+        color='red2',
         category='science'),
     'science pack 2 green': Product(
         time=6,
         inputs={'inserter': 1, 'transport belt': 1},
         factory_type='assembling machine IM',
+        color='green3',
         category='science'),
     'science pack 3 black': Product(
         time=10,
         product=2,
         inputs={'grenade': 1, 'piercing rounds magazine': 1, 'wall': 2},
         factory_type='assembling machine IM',
+        color='gray30',
         category='science'),
     'science pack 4 blue': Product(
         time=24,
         product=2,
         inputs={'advanced circuit': 3, 'engine unit': 2, 'sulfur': 1},
         factory_type='assembling machine IM',
+        color='cyan2',
         category='science'),
     'science pack 5 purple': Product(
         time=21,
         product=3,
         inputs={'electric furnace': 1, 'productivity module 1': 1, 'rail': 30},
         factory_type='assembling machine IM',
+        color='magenta3',
         category='science'),
     'science pack 6 yellow': Product(
         time=21,
         product=3,
         inputs={'flying robot frame': 1, 'low density structure': 3, 'processing unit': 2},
         factory_type='assembling machine IM',
+        color='yellow3',
         category='science'),
     # This part represents the rocket launch
     'science pack 7 white': Product(
@@ -233,56 +286,67 @@ products: Dict[str, Product] = {
         product=1000,
         inputs={'rocket part': 100, 'satellite': 1},
         factory_type='raw',
+        color='grey70',
         category='science'),
     'solar panel': Product(
         time=10,
         product=1,
         inputs={'copper plate': 5, 'electronic circuit': 15, 'steel plate': 5},
+        color='cornflowerblue',
         factory_type='assembling machine final'),
     # most efficient recipe
     'solid fuel': Product(
         time=2,
         product=1,
         inputs={'light oil': 10},
+        color='gray20',
         factory_type='chemical plant'),
     'speed module 1': Product(
         time=15,
         inputs={'advanced circuit': 5, 'electronic circuit': 5},
+        color='dodgerblue3',
         factory_type='assembling machine final'),
     'steel plate': Product(
         time=16,
         inputs={'iron plate': 5},
         time_expensive=32,
         input_expensive={'iron plate': 10},
+        color='slategray3',
         factory_type='furnace'),
     'stone': Product(
         time=1,
         inputs={},
         factory_type='mining drill',
+        color='lightgoldenrod4',
         category='raw'),
     'stone brick': Product(
         time=3.2,
         inputs={'stone': 2},
         factory_type='furnace',
+        color='lightblue3',
         category='plate'),
     'sulfur': Product(
         time=1,
         product=2,
         inputs={'petroleum gas': 30, 'water': 30},
+        color='lightgoldenrod2',
         factory_type='chemical plant'),
     'sulfuric acid': Product(
         time=1,
         product=50,
         inputs={'iron plate': 1, 'sulfur': 5, 'water': 100},
+        color='lightsalmon2',
         factory_type='chemical plant'),
     'transport belt': Product(
         time=0.5,
         product=2,
         inputs={'iron plate': 1, 'iron gear wheel': 1},
+        color='khaki3',
         factory_type='assembling machine final'),
     'wall': Product(
         time=0.5,
         inputs={'stone brick': 5},
+        color='khaki4',
         factory_type='assembling machine final'),
 
     # TODO: implement oil processing
@@ -290,21 +354,25 @@ products: Dict[str, Product] = {
         time=1,
         inputs={},
         factory_type='raw',
+        color='darkorange3',
         category='fluid'),
     'light oil': Product(
         time=1,
         inputs={},
         factory_type='raw',
+        color='darkgoldenrod2',
         category='fluid'),
     'petroleum gas': Product(
         time=1,
         inputs={},
         factory_type='raw',
+        color='gray70',
         category='fluid'),
     'water': Product(
         time=1,
         inputs={},
         factory_type='raw',
+        color='skyblue2',
         category='fluid'),
 }
 
@@ -324,6 +392,8 @@ factories: Dict[str, Factory] = {
     'raw': Factory(1.0, 1.0),
     # 4 prod. science packs
     'rocket silo': Factory(0.4, 1.4),
+    # full research + 2 prod. module
+    'lab': Factory(2.45, 1.2),
 }
 
 
@@ -368,8 +438,10 @@ class Graph:
         for item, rate in self.nodes.items():
             product = products.get(item)
             category = None
+            color = None
             if product is not None:
                 category = product.category
+                color = product.color
 
             if category is not None:
                 if category not in subgraphs:
@@ -382,28 +454,29 @@ class Graph:
                 g = main_graph
 
 
-            g.node(item, '{} [{:.1f}]'.format(item, rate))
+            g.node(item, '{} [{:.1f}]'.format(item, rate),
+                color=color, fontcolor=color)
 
         for subgraph in subgraphs.values():
             main_graph.subgraph(subgraph)
 
         for (source, target), rate in self.edges.items():
+            color = products[source].color
             main_graph.edge(
-                source, target, label='{:.1f}'.format(rate))
+                source, target, label='{:.1f}'.format(rate),
+                color=color, fontcolor=color)
 
         print(main_graph.source, file=sys.stderr)
         print(main_graph.pipe(encoding='utf-8'))
 
-
-science_pack_rate = 1.3 * 1.3125
+science_pack_factory = factories['assembling machine IM']
+lab = factories['lab']
+science_pack_rate = science_pack_factory.speed * science_pack_factory.productivity * lab.productivity
 
 g = Graph(True)
-g.add('science pack 1', science_pack_rate)
-g.add('science pack 2', science_pack_rate)
-g.add('science pack 3', science_pack_rate)
-g.add('science pack 4', science_pack_rate)
-g.add('science pack 5', science_pack_rate)
-g.add('science pack 6', science_pack_rate)
-g.add('science pack 7', science_pack_rate)
+g.add('science', science_pack_rate)
+
 # g.add('plastic bar', 45)
+# g.add('iron plate', 45)
+# g.add('copper wire', 45)
 g.render()
