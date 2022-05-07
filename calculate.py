@@ -1,9 +1,17 @@
 #!/usr/bin/env python3
 import graphviz
+import copy
 from typing import Dict, Optional, Set, Tuple
 import sys
 
-class Product:
+
+class RenderProduct:
+    def __init__(self, color: str, category: Optional[str]=None):
+        self.color = color
+        self.category = category
+
+
+class Product(RenderProduct):
     def __init__(
             self,
             time: float,
@@ -14,14 +22,13 @@ class Product:
             time_expensive: Optional[float]=None,
             input_expensive: Optional[Dict[str, int]]=None,
             category: Optional[str]=None) -> None:
+        super().__init__(color, category)
         self.time = time
         self.product = product
         self.inputs = inputs
         self.time_expensive = time_expensive
         self.input_expensive = input_expensive
-        self.color = color
         self.factory_type = factory_type
-        self.category = category
 
 
 class Factory:
@@ -54,7 +61,7 @@ products: Dict[str, Product] = {
         time=1,
         inputs={},
         factory_type='mining drill',
-        color='black',
+        color='gray10',
         category='raw'),
     'copper ore': Product(
         time=1,
@@ -306,6 +313,16 @@ products: Dict[str, Product] = {
         inputs={'advanced circuit': 5, 'electronic circuit': 5},
         color='dodgerblue3',
         factory_type='assembling machine final'),
+    'speed module 2': Product(
+        time=30,
+        inputs={'speed module 1': 4, 'advanced circuit': 5, 'processing unit': 5},
+        color='dodgerblue2',
+        factory_type='assembling machine final'),
+    'speed module 3': Product(
+        time=60,
+        inputs={'speed module 2': 5, 'advanced circuit': 5, 'processing unit': 5},
+        color='dodgerblue1',
+        factory_type='assembling machine final'),
     'steel plate': Product(
         time=16,
         inputs={'iron plate': 5},
@@ -350,6 +367,12 @@ products: Dict[str, Product] = {
         factory_type='assembling machine final'),
 
     # TODO: implement oil processing
+    'crude oil': Product(
+        time=1,
+        inputs={},
+        factory_type='raw',
+        color='black',
+        category='raw'),
     'heavy oil': Product(
         time=1,
         inputs={},
@@ -377,11 +400,25 @@ products: Dict[str, Product] = {
 }
 
 
+render_products: Dict[str, RenderProduct] = copy.copy(products)
+render_products['heavy oil cracking'] = RenderProduct(
+    color=products['heavy oil'].color,
+    category='oil processing')
+render_products['light oil cracking'] = RenderProduct(
+    color=products['light oil'].color,
+    category='oil processing')
+render_products['advanced oil processing'] = RenderProduct(
+    color='darkorange4',
+    category='oil processing')
+
+
 factories: Dict[str, Factory] = {
     # assembling machine 3 + 3 prod. module + 1 speed module
     'assembling machine IM': Factory(1.3125, 1.3),
     # assembling machine 3 + no modules
     'assembling machine final': Factory(1.25, 1.0),
+    # assembling machine 3 + 2 speed modules
+    'assembling machine speed': Factory(2.5, 1.0),
     # electric furnace + 1 prod. module + 1 efficiency module
     'furnace': Factory(1.7, 1.1),
     # electric mining drill + no modules
@@ -395,6 +432,20 @@ factories: Dict[str, Factory] = {
     # full research + 2 prod. module
     'lab': Factory(2.45, 1.2),
 }
+
+
+def calculate_forward(
+        factory: Factory,
+        input_rate: float,
+        factory_input: float,
+        time: float,
+        outputs: Dict[str, float]) -> Tuple[float, Dict[str, float]]:
+    num_factories = input_rate * time / factory_input / factory.speed
+    output_rates = {
+        name: rate * factory.productivity * input_rate / factory_input
+        for name, rate in outputs.items()
+    }
+    return (num_factories, output_rates)
 
 
 class Graph:
@@ -430,13 +481,54 @@ class Graph:
         self.targets.add(item)
         self._add(item, 'end', rate)
 
+    def add_oil_processing(self) -> None:
+        if 'heavy oil' in self.nodes or 'light oil' in self.nodes:
+            raise RuntimeError('Only petroleum gas is supported')
+        if 'petroleum gas' not in self.nodes:
+            return
+
+        # Oil refinery uses the same modules
+        factory = factories['chemical plant']
+        advanced_oil_processing, outputs = calculate_forward(
+            factory=factory,
+            input_rate=1.0,
+            factory_input=100,
+            time=5,
+            outputs={'heavy oil': 25, 'light oil': 45, 'petroleum gas': 55})
+        heavy_oil_cracking, light_oil = calculate_forward(
+            factory=factory,
+            input_rate=outputs['heavy oil'],
+            factory_input=40,
+            time=2,
+            outputs={'light oil': 30})
+        light_oil_cracking, petroleum_gas = calculate_forward(
+            factory=factory,
+            input_rate=outputs['light oil'] + light_oil['light oil'],
+            factory_input=30,
+            time=2,
+            outputs={'petroleum gas': 20})
+
+        multiplier = self.nodes['petroleum gas'] / (
+            outputs['petroleum gas'] + petroleum_gas['petroleum gas'])
+        self.nodes['advanced oil processing'] = advanced_oil_processing * multiplier
+        self.nodes['heavy oil cracking'] = heavy_oil_cracking * multiplier
+        self.nodes['light oil cracking'] = light_oil_cracking * multiplier
+        # TODO: this would overwrite other crude oil surces
+        self.nodes['crude oil'] = multiplier
+        self.edges[('crude oil', 'advanced oil processing')] = multiplier
+        self.edges[('advanced oil processing', 'heavy oil cracking')] = outputs['heavy oil'] * multiplier
+        self.edges[('advanced oil processing', 'light oil cracking')] = outputs['light oil'] * multiplier
+        self.edges[('advanced oil processing', 'petroleum gas')] = outputs['petroleum gas'] * multiplier
+        self.edges[('heavy oil cracking', 'light oil cracking')] = light_oil['light oil'] * multiplier
+        self.edges[('light oil cracking', 'petroleum gas')] = petroleum_gas['petroleum gas'] * multiplier
+
     def render(self) -> None:
         main_graph = graphviz.Digraph(format='svg')
         main_graph.body.append('rankdir=LR;\n')
         subgraphs: Dict[str, graphviz.Digraph] = {}
 
         for item, rate in self.nodes.items():
-            product = products.get(item)
+            product = render_products.get(item)
             category = None
             color = None
             if product is not None:
@@ -461,7 +553,7 @@ class Graph:
             main_graph.subgraph(subgraph)
 
         for (source, target), rate in self.edges.items():
-            color = products[source].color
+            color = render_products[source].color
             main_graph.edge(
                 source, target, label='{:.1f}'.format(rate),
                 color=color, fontcolor=color)
@@ -469,14 +561,31 @@ class Graph:
         print(main_graph.source, file=sys.stderr)
         print(main_graph.pipe(encoding='utf-8'))
 
+
+def speed_up_modules() -> None:
+    for name, product in products.items():
+        if 'module' in name:
+            product.factory_type = 'assembling machine speed'
+
 science_pack_factory = factories['assembling machine IM']
 lab = factories['lab']
 science_pack_rate = science_pack_factory.speed * science_pack_factory.productivity * lab.productivity
 
+module = products['speed module 3']
+module_factory = factories[module.factory_type]
+module_factory_number = 1
+module_rate = module_factory_number * module_factory.speed / module.time
+
 g = Graph(True)
-g.add('science', science_pack_rate)
+
+# g.add('science', science_pack_rate)
+
+speed_up_modules()
+g.add('speed module 3', module_rate)
+g.add_oil_processing()
 
 # g.add('plastic bar', 45)
 # g.add('iron plate', 45)
 # g.add('copper wire', 45)
+
 g.render()
