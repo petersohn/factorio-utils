@@ -191,6 +191,16 @@ products: Dict[str, Product] = {
         inputs={'advanced circuit': 5, 'electronic circuit': 5},
         color='brown',
         factory_type='assembling machine final'),
+    'productivity module 2': Product(
+        time=30,
+        inputs={'productivity module 1': 4, 'advanced circuit': 5, 'processing unit': 5},
+        color='brown',
+        factory_type='assembling machine final'),
+    'productivity module 3': Product(
+        time=60,
+        inputs={'productivity module 2': 5, 'advanced circuit': 5, 'processing unit': 5},
+        color='brown',
+        factory_type='assembling machine final'),
     'radar': Product(
         time=0.5,
         product=1,
@@ -510,17 +520,29 @@ class Graph:
 
         multiplier = self.nodes['petroleum gas'] / (
             outputs['petroleum gas'] + petroleum_gas['petroleum gas'])
+
+        def add_raw_input(source: str, target: str, amount: float):
+            self.nodes.setdefault(source, 0.0)
+            self.nodes[source] += amount * multiplier
+            self.edges[(source, target)] = amount * multiplier
+
         self.nodes['advanced oil processing'] = advanced_oil_processing * multiplier
         self.nodes['heavy oil cracking'] = heavy_oil_cracking * multiplier
         self.nodes['light oil cracking'] = light_oil_cracking * multiplier
-        # TODO: this would overwrite other crude oil surces
-        self.nodes['crude oil'] = multiplier
-        self.edges[('crude oil', 'advanced oil processing')] = multiplier
+
         self.edges[('advanced oil processing', 'heavy oil cracking')] = outputs['heavy oil'] * multiplier
         self.edges[('advanced oil processing', 'light oil cracking')] = outputs['light oil'] * multiplier
         self.edges[('advanced oil processing', 'petroleum gas')] = outputs['petroleum gas'] * multiplier
         self.edges[('heavy oil cracking', 'light oil cracking')] = light_oil['light oil'] * multiplier
         self.edges[('light oil cracking', 'petroleum gas')] = petroleum_gas['petroleum gas'] * multiplier
+
+        add_raw_input('crude oil', 'advanced oil processing', 1.0)
+        # add_raw_input('water', 'advanced oil processing', advanced_oil_processing * 50 / 5)
+        # add_raw_input('water', 'heavy oil cracking', heavy_oil_cracking * 30 / 2)
+        # add_raw_input('water', 'light oil cracking', light_oil_cracking * 30 / 2)
+
+        products['water'].category = 'raw'
+
 
     def render(self) -> None:
         main_graph = graphviz.Digraph(format='svg')
@@ -567,25 +589,28 @@ def speed_up_modules() -> None:
         if 'module' in name:
             product.factory_type = 'assembling machine speed'
 
+g = Graph(True)
+
+######## Science ########
 science_pack_factory = factories['assembling machine IM']
 lab = factories['lab']
 science_pack_rate = science_pack_factory.speed * science_pack_factory.productivity * lab.productivity
 
-module = products['speed module 3']
-module_factory = factories[module.factory_type]
-module_factory_number = 1
-module_rate = module_factory_number * module_factory.speed / module.time
-
-g = Graph(True)
-
 # g.add('science', science_pack_rate)
 
-speed_up_modules()
-g.add('speed module 3', module_rate)
+######## Modules ########
+
+# speed_up_modules()
+module = products['speed module 3']
+module_factory = factories[module.factory_type]
+module_rate = module_factory.speed * module_factory.productivity / module.time
+
+# g.add('speed module 3', module_rate * 2)
+# g.add('productivity module 3', module_rate * 4)
 g.add_oil_processing()
 
 # g.add('plastic bar', 45)
-# g.add('iron plate', 45)
+g.add('iron plate', 45)
 # g.add('copper wire', 45)
 
 g.render()
